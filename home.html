@@ -4,82 +4,113 @@ Copyright 2017 Todd Brochu
 -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Address Geocoder</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #floating-panel {
-        position: absolute;
-        top: 10px;
-        left: 25%;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-        text-align: center;
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="floating-panel">
-      <input id="address" type="textbox" value="Enter a street address">
-      <input id="submit" type="button" value="Geocode">
-    </div>
-    <div id="map"></div>
-    <script>
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 9,
-          center: {lat: 45.51865, lng: -122.680144}
-        });
-        var geocoder = new google.maps.Geocoder();
+	<head>
+		<title>Address Geocoder</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<link rel="shortcut icon" href="favicon.ico" >
+		<style>
+			/* Always set the map height explicitly to define the size of the div
+			* element that contains the map. */
+			#map {
+				height: 100%;
+			}
+			/* Optional: Makes the sample page fill the window. */
+			html, body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			#floating-panel {
+				position: absolute;
+				top: 10px;
+				left: 25%;
+				z-index: 5;
+				background-color: #fff;
+				padding: 5px;
+				border: 1px solid #999;
+				text-align: left;
+				font-family: 'Roboto','sans-serif';
+				line-height: 30px;
+				padding-left: 10px;
+				padding-right: 15px;
+				width: 40%;
+			}
+			#address {
+				width: 100%;
+			}
+			#submit-wrapper {
+				width: 100%;
+				vertical-align: middle;
+				float: left;
+			}
+			#results {
+				float: right;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="floating-panel">
+			<input id="address" type="textbox" value="Enter a street address">
+			<div id="submit-wrapper">
+				<input id="submit" type="button" value="Geocode">
+				<span id="results"></span>
+			</div>
+		</div>
+		<div id="map"></div>
+		<script>
+			function initMap() {
+				var addressElem = document.getElementById('address');
 
-        document.getElementById('address').addEventListener('click', function() {
-          document.getElementById('address').value='';
-        });
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 10,
+					center: {lat: 45.51865, lng: -122.680144}
+				});
+				var geocoder = new google.maps.Geocoder();
 
-        document.getElementById('submit').addEventListener('click', function() {
-          geocodeAddress(geocoder, map);
-        });
-      }
+				/* When clicking in the address input, clear the value */
+				addressElem.addEventListener('click', function() {
+					addressElem.value='';
+				});
 
-      function geocodeAddress(geocoder, resultsMap) {
-        var address = document.getElementById('address').value;
-        var loc;
-        geocoder.geocode({'address': address}, function(results, status) {
-          if (status === 'OK') {
-          	loc = results[0].geometry.location;
-          	console.log(loc.lat() + ', ' + loclng());	
-            resultsMap.setCenter(loc);
-            resultsMap.setZoom(17);
-            resultsMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-            var marker = new google.maps.Marker({
-              map: resultsMap,
-              position: loc
-            });
-          } else {
-            alert('Geocode was not successful for the following reason: ' + status);
-          }
-        });
-      }
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1xbb1xsevsF8s5PdQv7kvlsGa89jd8VE&callback=initMap">
-    </script>
-  </body>
+				/* When hitting the enter key, geocode the address */		
+				addressElem.addEventListener('keypress', function (e) {
+					var key = e.which || e.keyCode;
+					if (key === 13 && document.getElementById('address').value != '') {
+						geocodeAddress(geocoder, map);
+					}
+				});
+
+				/* When clicking the submit button, geocode the address */
+				document.getElementById('submit').addEventListener('click', function() {
+					geocodeAddress(geocoder, map);
+				});
+			}
+
+			function geocodeAddress(geocoder, resultsMap) {
+				var address = document.getElementById('address').value;
+				var coordinates = document.getElementById('results');
+				var loc;
+				geocoder.geocode({'address': address}, function(results, status) {
+					if (status === 'OK') {
+						loc = results[0].geometry.location;
+						resultsMap.setCenter(loc);
+						resultsMap.setZoom(18);
+						resultsMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+						var marker = new google.maps.Marker({
+							map: resultsMap,
+						  	position: loc
+						});
+						/* populate the results element with the geocoded coordinates */
+						coordinates.innerHTML = loc.lat().toFixed(6) + ', ' + loc.lng().toFixed(6);
+					} else {
+						alert('Geocode was not successful for the following reason: ' + status);
+					}
+				});
+			}
+		</script>
+		<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzOl8WbA0XaWGgU21bWig3PdCsTbF-zUg&callback=initMap">
+		</script>
+	</body>
 </html> 
