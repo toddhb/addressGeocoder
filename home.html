@@ -48,6 +48,7 @@ Copyright 2017 Todd Brochu
 				float: right;
 			}
 		</style>
+		<script type="text/javascript" src="main.js"></script>
 	</head>
 	<body>
 		<div id="floating-panel">
@@ -60,30 +61,36 @@ Copyright 2017 Todd Brochu
 		<div id="map"></div>
 		<script>
 			function initMap() {
+				//TODO: MOVE TO BODY.JS
+				//TODO: CONVERT FUNCTION CALLS TO LAMBDAS
 				var addressElem = document.getElementById('address');
 
-				var map = new google.maps.Map(document.getElementById('map'), {
-					zoom: 10,
-					center: {lat: 45.51865, lng: -122.680144}
-				});
-				var geocoder = new google.maps.Geocoder();
+				getUsersLocation().then((location) => {
+					var map = new google.maps.Map(document.getElementById('map'), {
+						zoom: 10,
+						center: {lat: location[0], lng: location[1]}
+					});
+					var geocoder = new google.maps.Geocoder();
 
-				/* When clicking in the address input, clear the value */
-				addressElem.addEventListener('click', function() {
-					addressElem.value='';
-				});
+					/* When clicking in the address input, clear the value */
+					addressElem.addEventListener('click', function() {
+						addressElem.value='';
+					});
 
-				/* When hitting the enter key, geocode the address */		
-				addressElem.addEventListener('keypress', function (e) {
-					var key = e.which || e.keyCode;
-					if (key === 13 && document.getElementById('address').value != '') {
+					/* When hitting the enter key, geocode the address */
+					addressElem.addEventListener('keypress', function (e) {
+						var key = e.which || e.keyCode;
+						if (key === 13 && document.getElementById('address').value != '') {
+							geocodeAddress(geocoder, map);
+						}
+					});
+
+					/* When clicking the submit button, geocode the address */
+					document.getElementById('submit').addEventListener('click', function() {
 						geocodeAddress(geocoder, map);
-					}
-				});
-
-				/* When clicking the submit button, geocode the address */
-				document.getElementById('submit').addEventListener('click', function() {
-					geocodeAddress(geocoder, map);
+					});
+				}).catch((err)=> {
+					alert('Location unavailable');
 				});
 			}
 
@@ -99,7 +106,7 @@ Copyright 2017 Todd Brochu
 						resultsMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
 						var marker = new google.maps.Marker({
 							map: resultsMap,
-						  	position: loc
+							position: loc
 						});
 						/* populate the results element with the geocoded coordinates */
 						coordinates.innerHTML = loc.lat().toFixed(6) + ', ' + loc.lng().toFixed(6);
