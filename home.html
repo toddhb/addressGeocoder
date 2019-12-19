@@ -62,7 +62,6 @@ Copyright 2017 Todd Brochu
 		<script>
 			function initMap() {
 				//TODO: MOVE TO BODY.JS
-				//TODO: CONVERT FUNCTION CALLS TO LAMBDAS
 				var addressElem = document.getElementById('address');
 
 				getUsersLocation().then((location) => {
@@ -73,12 +72,12 @@ Copyright 2017 Todd Brochu
 					var geocoder = new google.maps.Geocoder();
 
 					/* When clicking in the address input, clear the value */
-					addressElem.addEventListener('click', function() {
+					addressElem.addEventListener('click', () => {
 						addressElem.value='';
 					});
 
 					/* When hitting the enter key, geocode the address */
-					addressElem.addEventListener('keypress', function (e) {
+					addressElem.addEventListener('keypress', (e) => {
 						var key = e.which || e.keyCode;
 						if (key === 13 && document.getElementById('address').value != '') {
 							geocodeAddress(geocoder, map);
@@ -86,7 +85,7 @@ Copyright 2017 Todd Brochu
 					});
 
 					/* When clicking the submit button, geocode the address */
-					document.getElementById('submit').addEventListener('click', function() {
+					document.getElementById('submit').addEventListener('click', () => {
 						geocodeAddress(geocoder, map);
 					});
 				}).catch((err)=> {
@@ -98,7 +97,7 @@ Copyright 2017 Todd Brochu
 				var address = document.getElementById('address').value;
 				var coordinates = document.getElementById('results');
 				var loc;
-				geocoder.geocode({'address': address}, function(results, status) {
+				geocoder.geocode({'address': address}, (results, status) => {
 					if (status === 'OK') {
 						loc = results[0].geometry.location;
 						resultsMap.setCenter(loc);
