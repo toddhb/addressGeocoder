@@ -67,7 +67,8 @@ Copyright 2017 Todd Brochu
 				getUsersLocation().then((location) => {
 					var map = new google.maps.Map(document.getElementById('map'), {
 						zoom: 10,
-						center: {lat: location[0], lng: location[1]}
+						center: {lat: location[0], lng: location[1]},
+						controlSize: 25
 					});
 					var geocoder = new google.maps.Geocoder();
 
